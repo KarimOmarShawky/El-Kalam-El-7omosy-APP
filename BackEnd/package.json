@@ -1,0 +1,28 @@
+{
+  "name": "el-kalam-el-7omosy-app",
+  "version": "1.0.0",
+  "description": "El-Kalam El-7omosy is an anonymous messaging app inspired by platforms like Sarahah and NGL, allowing users to receive anonymous messages, share their profiles, and interact with others anonymously.",
+  "homepage": "https://github.com/KarimOmarShawky/El-Kalam-El-7omosy-APP#readme",
+  "bugs": {
+    "url": "https://github.com/KarimOmarShawky/El-Kalam-El-7omosy-APP/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarimOmarShawky/El-Kalam-El-7omosy-APP.git"
+  },
+  "license": "ISC",
+  "author": "Karim & Ibrahim",
+  "type": "commonjs",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "npm run dev"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.1"
+  }
+}
