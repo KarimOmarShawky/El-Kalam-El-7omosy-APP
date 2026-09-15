@@ -12,13 +12,15 @@
   },
   "license": "ISC",
   "author": "Karim & Ibrahim",
-  "type": "commonjs",
-  "main": "main.js",
+  "type": "module",
+  "main": "src/main.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "npm run dev"
+    "test": "npm run dev",
+    "dev" : "node --watch ."
+
   },
   "dependencies": {
     "dotenv": "^17.4.2",
