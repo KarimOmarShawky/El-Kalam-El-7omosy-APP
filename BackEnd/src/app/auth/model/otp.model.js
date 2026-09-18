@@ -1,18 +1,19 @@
 import mongoose from "mongoose";
+
 const otpSchema = new mongoose.Schema({
-        code:{
+        code: {
             type: String,
             required: true,
-            length:6
+            length: 6
         },
-        email:{
+        email: {
             type: String,
             required: true,
-            unique:true,
+            unique: true,
             lowercase: true,
             trim: true
         },
-        expiresAt:{
+        expiresAt: {
             type: Date,
             required: true,
             expires: 0
@@ -20,12 +21,21 @@ const otpSchema = new mongoose.Schema({
 
     },
     {
-        timestamps:{
+        timestamps: {
             createdAt: "createdAt",
             updatedAt: false,
         }
 
     }
 )
-const OTP = mongoose.model("OTP", otpSchema);
-export default OTP;
+otpSchema.pre("save", async function () {
+    if (this.isNew) {
+        await this.constructor.deleteMany(
+            {
+                email: this.email
+            }
+        )
+    }
+})
+
+export const OTP = mongoose.model("OTP", otpSchema);

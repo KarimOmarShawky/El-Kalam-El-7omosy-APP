@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
         required: function () {
             return this.provider === "local";
             },
+        selected : false
     },
     provider:{
         type:String,
@@ -38,11 +39,11 @@ const userSchema = new mongoose.Schema({
     gender:{
         type: String,
         enum: ["male", "female" , "other"],
+        lowercase: true,
     },
 
 },
     {
         timestamps: true
     })
-const User = mongoose.model("User", userSchema);
-export default User;
+export const User = mongoose.model("User", userSchema);

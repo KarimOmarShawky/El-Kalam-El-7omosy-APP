@@ -8,3 +8,4 @@ router.use('/auth',authRoutes);
 router.use('/message' , messageRoutes);
 
 export default router;
+// api/v1/auth/register
