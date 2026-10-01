@@ -9,3 +9,4 @@ export const toMS = (quantity, unit) => {
         case 'year':   return quantity * 365 * 24 * 60 * 60 * 1000;
     }
 }
+export default toMS;
