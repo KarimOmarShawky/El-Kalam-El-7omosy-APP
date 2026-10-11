@@ -1,6 +1,6 @@
 import {OTP} from '../model/otp.model.js';
 
-import * as time from "../../../common/utils/time.js";
+import * as time from "../../../pkg/utils/time.js";
 import * as authRepository from "./auth.repository.js";
 export const createOtp = async (email , code , minutes = 5) => {
     return await OTP.create({

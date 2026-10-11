@@ -9,3 +9,8 @@ export const updateUser = async (email, updatedData) =>{
         { returnDocument: 'after' },
     )
 }
+
+export const findUserByID = async(id) => {
+    return await User.findOne({_id : id , isDeleted: false} , {password:0} , {})
+
+}

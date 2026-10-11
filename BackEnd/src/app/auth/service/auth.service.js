@@ -8,7 +8,7 @@ import validator from 'validator';
 // Repositories
 // ============================================
 import { createUser as createUserRecord } from '../repository/auth.repository.js';
-import { findOtp } from '../repository/otp.repository.js';
+import { findOtp , deleteOtp} from '../repository/otp.repository.js';
 import { findUserByEmail, updateUser } from '../../user/repository/user.repository.js';
 
 // ============================================
@@ -18,16 +18,17 @@ import { findUserByEmail, updateUser } from '../../user/repository/user.reposito
 // ============================================
 // Utilities & Helpers
 // ============================================
-import { sendMail } from '../../../common/email/email.js';
-import { renderWelcomeEmail } from '../../../common/email/email.temp.js';
-import { comparePassword, hashPassword } from '../../../common/utils/hashing.js';
-import { createAndSendOtp } from '../../../common/utils/otp.js';
-import { signToken } from '../../../common/utils/utils.js';
+import {mailjet} from '../../../lib/email/init.js';
+import { renderWelcomeEmail } from '../../../lib/email/email.temp.js';
+import { comparePassword, hashPassword } from '../../../lib/utils/hashing.js';
+import { createAndSendOtp } from '../../../lib/utils/otp.js';
+import { signToken } from '../../../lib/utils/utils.js';
 
 // ============================================
 // Error Handlers & Constants
 // ============================================
 import { invalidGoogleToken, userAlreadyExist, userAlreadyVerified, userNotExist, invalidCredentials, userNotVerified, invalidEmail, invalidOrExpiredOTP } from '../../user/error.js';
+import {env} from "../../../lib/config/env.js";
 
 export const createUser = async (userData) => {
     if (!userData.email || !validator.isEmail(userData.email)) {
@@ -63,11 +64,17 @@ export const otpVerify = async (email, otp) => {
 
     const updatedUser = await updateUser(email, { isVerified: true });
     const emailContent = await renderWelcomeEmail(user.name, 'we don`t have url XD');
-    await sendMail(
-        systemOtp.email,
-        'Your Email has been verified',
-        emailContent,
-    )
+
+    try {
+        await mailjet.sendMail(
+            systemOtp.email,
+            'Your Email has been verified',
+            emailContent,
+        );
+    } catch (error) {
+        console.warn('Failed to send verification email:', error.message || error);
+    }
+
     return updatedUser;
 };
 
@@ -130,7 +137,7 @@ export const verifyGoogleToken = async (token) => {
      const googleClient = new OAuth2Client();
     const ticket = await googleClient.verifyIdToken({
         idToken: token,
-        audience: [process.env.GOOGLE_WEB_CLIENT_ID],
+        audience: [env.google.webClient],
 
     })
     return ticket.getPayload();

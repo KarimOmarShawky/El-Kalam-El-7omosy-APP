@@ -1,7 +1,7 @@
 import * as authService from '../service/auth.service.js';
-import toMs from '../../../common/utils/time.js';
-import {validateSchema} from '../../../common/validation/validation.js';
-import {registerSchema, verifyEmailSchema, resendOtpSchema, loginSchema, loginWithGoogleSchema, resetPasswordSchema, sendOtpSchema} from '../validation/auth.validation.js';
+import toMs from '../../../pkg/utils/time.js';
+import {validateSchema} from '../../../lib/validation/validation.js';
+import {registerSchema, verifyEmailSchema, resendOtpSchema, loginSchema, loginWithGoogleSchema, resetPasswordSchema, sendOtpSchema} from '../dto/auth.dto.js';
 export const createUser = async (req, res, next) => {
     try {
         const validatedData = validateSchema(registerSchema, req.body);
@@ -23,7 +23,8 @@ export const createUser = async (req, res, next) => {
 
 export const verifyEmail = async (req, res, next) => {
     try {
-        const validatedData = validateSchema(verifyEmailSchema, req.body);
+        const payload = req.body && Object.keys(req.body).length ? req.body : req.query;
+        const validatedData = validateSchema(verifyEmailSchema, payload);
         const updatedUser = await authService.otpVerify(validatedData.email, validatedData.otp);
         res.status(200).json(
             {
@@ -40,7 +41,8 @@ export const verifyEmail = async (req, res, next) => {
 
 export const resendOtp = async (req, res, next) => {
     try {
-        const validatedData = validateSchema(resendOtpSchema, req.body);
+        const payload = req.body && Object.keys(req.body).length ? req.body : req.query;
+        const validatedData = validateSchema(resendOtpSchema, payload);
         await authService.resendOtpEmail(validatedData.email);
         res.status(200).json({
             success: true,
@@ -103,7 +105,8 @@ export const resetPassword = async (req, res, next) => {
 
 export const sendOtp = async (req, res, next) => {
     try {
-        const validatedData = validateSchema(sendOtpSchema, req.body);
+        const payload = req.body && Object.keys(req.body).length ? req.body : req.query;
+        const validatedData = validateSchema(sendOtpSchema, payload);
         await authService.sendOtpEmail(validatedData.email);
         res.status(200).json({
             success: true,

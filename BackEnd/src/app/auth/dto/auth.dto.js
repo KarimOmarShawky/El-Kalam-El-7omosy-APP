@@ -14,6 +14,15 @@ export const loginSchema = z.object({
     password: z.string().min(6).max(20).trim(),
 });
 
+export const verifyEmailSchema = z.object({
+    email: z.email().lowercase().trim(),
+    otp: z.string().length(6).trim(),
+});
+
+export const resendOtpSchema = z.object({
+    email: z.email().lowercase().trim(),
+});
+
 export const resetPasswordSchema = z.object({
     email: z.email().lowercase().trim(),
     code: z.string().length(6).trim(),

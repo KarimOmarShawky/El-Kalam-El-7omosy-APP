@@ -13,7 +13,7 @@
   "license": "ISC",
   "author": "Karim & Ibrahim",
   "type": "module",
-  "main": "src/main.js",
+  "main": "src/server.js",
   "directories": {
     "doc": "docs"
   },
@@ -23,13 +23,17 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "google-auth-library": "^11.1.0",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.1",
+    "multer": "^2.4.0",
+    "node-mailjet": "^6.0.11",
     "nodemailer": "^10.0.10",
     "validator": "^13.15.35",
     "zod": "^4.6.5"
