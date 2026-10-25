@@ -15,7 +15,6 @@ export const globalErrorHandler = (err, req, res, next) => {
         statusCode: statusCode,
         status: 'error',
         message,
-        stack: err.stack,
 
     })
 

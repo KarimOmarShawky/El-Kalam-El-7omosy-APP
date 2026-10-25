@@ -1,0 +1,13 @@
+import { Types } from "mongoose"
+import {z} from "zod"
+export const createRequestSchema = z.object({
+    message: z.string().trim().refine(
+                (val)=>{
+                    return Types.ObjectId.isValid(val);
+                }),
+    receiver: z.string().trim().refine(
+                (val)=>{
+                    return Types.ObjectId.isValid(val);
+                })
+});
+
