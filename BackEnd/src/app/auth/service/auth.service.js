@@ -9,7 +9,12 @@ import validator from 'validator';
 // ============================================
 import { createUser as createUserRecord } from '../repository/auth.repository.js';
 import { findOtp , deleteOtp} from '../repository/otp.repository.js';
-import { findUserByEmail, updateUser } from '../../user/repository/user.repository.js';
+import {
+    findUserByEmail,
+    findUserForLogin,
+    incrementFailedLoginAttempts,
+    updateUser,
+} from '../../user/repository/user.repository.js';
 
 // ============================================
 // Services
@@ -23,11 +28,12 @@ import { renderWelcomeEmail } from '../../../lib/email/email.temp.js';
 import { comparePassword, hashPassword } from '../../../lib/utils/hashing.js';
 import { createAndSendOtp } from '../../../lib/utils/otp.js';
 import { signToken } from '../../../lib/utils/utils.js';
+import toMs from '../../../pkg/utils/time.js';
 
 // ============================================
 // Error Handlers & Constants
 // ============================================
-import { invalidGoogleToken, userAlreadyExist, userAlreadyVerified, userNotExist, invalidCredentials, userNotVerified, invalidEmail, invalidOrExpiredOTP } from '../../user/error.js';
+import { accountLocked,invalidGoogleToken, userAlreadyExist, userAlreadyVerified, userNotExist, invalidCredentials, userNotVerified, invalidEmail, invalidOrExpiredOTP } from '../../user/error.js';
 import {env} from "../../../lib/config/env.js";
 
 export const createUser = async (userData) => {
@@ -91,21 +97,38 @@ export const resendOtpEmail = async (email) => {
 };
 
 export const loginUser = async (email, password) => {
-    //isExist
-    const user = await findUserByEmail(email);
+    const user = await findUserForLogin(email);
     if (!user) {
         throw userNotExist;
     }
-    //isNotVerified
     if (user.isVerified === false) {
         throw userNotVerified;
     }
-    //checkPass
+
+    const now = new Date();
+    if (user.accountLockedUntil > now) {
+        throw accountLocked;
+    }
+    if (user.accountLockedUntil && user.accountLockedUntil <= now) {
+        await updateUser(email, { failedLoginAttempts: 0, accountLockedUntil: null });
+    }
+
     const checkPass = await comparePassword(password, user.password);
     if (!checkPass) {
+        const updatedUser = await incrementFailedLoginAttempts(email);
+        if (!updatedUser) {
+            throw userNotExist;
+        }
+        if (updatedUser.failedLoginAttempts >= 5) {
+            const accountLockedUntil = new Date(Date.now() + toMs(5, 'minute'));
+            await updateUser(email, { accountLockedUntil });
+            throw accountLocked;
+        }
+
         throw invalidCredentials;
     }
-    //generateToken
+
+    await updateUser(email, { failedLoginAttempts: 0, accountLockedUntil: null });
     return signToken(user);
 }
 

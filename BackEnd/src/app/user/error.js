@@ -7,3 +7,4 @@ export const invalidEmail = new AppError('invalid Email', 401);
 export const invalidOrExpiredOTP = new AppError('invalid Or Expired OTP', 403);
 export const invalidCredentials = new AppError('invalid Credentials', 401);
 export const invalidGoogleToken = new AppError('invalid Google Token', 403);
+export const accountLocked = new AppError('Account is locked due to multiple failed login attempts. Please try again later.', 403);

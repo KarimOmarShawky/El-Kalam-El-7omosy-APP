@@ -17,8 +17,27 @@
 
 - content -> String - required - minlength:1 - maxlength:200 - trim:true
 - receiver -> ObjectId - required - ref:User
-- sender -> ObjectId - ref:User
+- sender -> ObjectId - ref:User [optional for anonymous guest messages]
+- messageType -> String - required - enum:anonymous,public - default:anonymous
 - isDeleted -> Boolean - default:false.
+- createdAt -> Date
+- updatedAt -> Date
+
+-------------------------------------
+
+* Conversation:
+
+- originalMessage -> ObjectId - required - unique - ref:Message
+- sender -> ObjectId - required - ref:User
+- receiver -> ObjectId - required - ref:User
+- createdAt -> Date
+- updatedAt -> Date
+
+* ConversationMessage:
+
+- conversation -> ObjectId - required - ref:Conversation
+- sender -> ObjectId - required - ref:User
+- content -> String - required - minlength:1 - maxlength:5000 - trim:true
 - createdAt -> Date
 - updatedAt -> Date
 

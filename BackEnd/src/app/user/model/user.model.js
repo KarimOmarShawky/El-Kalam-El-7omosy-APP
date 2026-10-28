@@ -41,6 +41,14 @@ const userSchema = new mongoose.Schema({
         enum: ["male", "female" , "other"],
         lowercase: true,
     },
+    failedLoginAttempts:{
+        type:Number,
+        default:0
+    },
+    accountLockedUntil:{
+        type:Date,
+        default:null
+    },
 
 },
     {

@@ -16,6 +16,12 @@ const messageSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    messageType: {
+        type: String,
+        enum: ["anonymous", "public"],
+        default: "anonymous",
+        required: true,
+    },
     isDeleted:{
         type: Boolean,
         default: false,

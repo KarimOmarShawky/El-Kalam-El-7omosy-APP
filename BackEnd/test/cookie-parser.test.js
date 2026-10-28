@@ -26,7 +26,7 @@ for (const [key, value] of Object.entries(testEnvironment)) {
     }
 }
 
-const {guard} = await import('../src/lib/auth/guard.js');
+const {guard, optionalGuard} = await import('../src/lib/auth/guard.js');
 const app = express();
 let server;
 let baseUrl;
@@ -38,6 +38,9 @@ app.all('/parse', (req, res) => {
 });
 app.post('/protected', guard, (req, res) => {
     res.json({userId: req.user.id});
+});
+app.post('/optional', optionalGuard, (req, res) => {
+    res.json({userId: req.user?.id ?? null});
 });
 app.use((error, req, res, next) => {
     res.status(error.statusCode ?? 500).json({message: error.message});
@@ -89,4 +92,22 @@ test('guard rejects a POST without an access-token cookie', async () => {
 
     assert.equal(response.status, 401);
     assert.deepEqual(await response.json(), {message: 'no token provided'});
+});
+
+test('optionalGuard allows an anonymous POST without an access-token cookie', async () => {
+    const response = await fetch(`${baseUrl}/optional`, {method: 'POST'});
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {userId: null});
+});
+
+test('optionalGuard attaches the user when a valid access-token cookie is present', async () => {
+    const token = jwt.sign({id: 'test-user'}, process.env.JWT_SECRET);
+    const response = await fetch(`${baseUrl}/optional`, {
+        method: 'POST',
+        headers: {Cookie: `access_token=${token}`},
+    });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {userId: 'test-user'});
 });

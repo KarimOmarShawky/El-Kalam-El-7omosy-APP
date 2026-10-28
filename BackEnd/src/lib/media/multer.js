@@ -1,5 +1,5 @@
 import multer from 'multer';
-import AppError from '../utils/appError.js';
+import {AppError} from '../error/error.js';
 import crypto from 'crypto';
 
 export function fileUpload(allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf']) {

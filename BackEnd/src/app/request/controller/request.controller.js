@@ -1,12 +1,10 @@
 import { validateSchema } from "../../../lib/validation/validation.js"
-import { createRequestSchema } from "../validation/request.validation.js"
+import { changeRequestStatusSchema, createRequestSchema } from "../dto/request.dto.js"
 import * as requestService from "../service/request.service.js"
 export const createRequest = async (req, res, next) => {
     try {
-        const { message, receiver } = req.body;
-        // validate request body
-        const data = validateSchema(createRequestSchema, { message, receiver });
-        const request = await requestService.createRequest(data.message, data.receiver);
+        const data = validateSchema(createRequestSchema, req.body);
+        const request = await requestService.createRequest(data.message, req.user.id);
         res.status(201).json({
             message: "Request created successfully",
             success: true,
@@ -19,8 +17,7 @@ export const createRequest = async (req, res, next) => {
 
 export const getRequests = async (req, res, next) => {
     try {
-        const messageSender = req.user.id;
-        const requests = await requestService.getRequests(messageSender);
+        const requests = await requestService.getRequests(req.user.id);
         res.status(200).json({
             message: "Requests retrieved successfully",
             success: true,
@@ -33,13 +30,18 @@ export const getRequests = async (req, res, next) => {
 
 export const changeRequestStatus = async (req, res, next) => {
     try {
-        const { message, receiver, status } = req.body;
-        const updatedRequest = await requestService.changeRequestStatus(message, receiver, status);
+        const data = validateSchema(changeRequestStatusSchema, req.body);
+        const updatedRequest = await requestService.changeRequestStatus(
+            data.requestId,
+            req.user.id,
+            data.status,
+        );
         res.status(200).json({
-            message: `Request has been ${status} successfully`,
+            message: `Request has been ${data.status} successfully`,
             success: true,
             data: updatedRequest,
         });
     } catch (error) {
         next(error);
-    }}
+    }
+}

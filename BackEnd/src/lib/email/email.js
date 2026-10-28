@@ -19,3 +19,4 @@ export const sendMail = async (to ,subject, html) => {
     })
     return info;
 }
+

@@ -27,6 +27,15 @@ function fallbackWelcomeHtml(userName, dashboardUrl) {
         </div>
     `;
 }
+function accountLockHtml(userName) {
+    return `
+        <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #111827;">
+            <h2>Hello ${userName},</h2>
+            <p>Your account has been locked due to multiple failed login attempts.</p>
+            <p>Please try again later or contact support if you need assistance.</p>
+        </div>
+    `;
+}
 
 export async function renderOtpEmail(userName, otpCode) {
     const templatePath = path.join(emailsDir, 'otp.email.ejs');
@@ -54,3 +63,4 @@ export async function renderWelcomeEmail(userName, dashboardUrl) {
         return fallbackWelcomeHtml(userName, dashboardUrl);
     }
 }
+

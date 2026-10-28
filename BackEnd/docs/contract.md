@@ -117,7 +117,7 @@ Returns a user's public profile.
 
 ## Send Anonymous Message
 
-### `POST /messages`
+### `POST /api/v1/message`
 
 Sends an anonymous message to a user.
 
@@ -125,7 +125,7 @@ Sends an anonymous message to a user.
 
 ```json
 {
-  "receiverId": "USER_ID",
+  "receiver": "USER_ID",
   "content": "Hello!"
 }
 ```
@@ -149,7 +149,7 @@ Sends an anonymous message to a user.
 
 ## Get My Messages
 
-### `GET /messages`
+### `GET /api/v1/message`
 
 Returns the authenticated user's received messages.
 
@@ -178,6 +178,64 @@ Authorization: Bearer JWT_TOKEN
 ```
 
 ---
+
+## Message Identity and Reveal Requests
+
+The anonymous-message endpoint (`POST /api/v1/message`) allows guest sends.
+When the sender is logged in, their user ID is stored but hidden while the
+message is anonymous. A guest message has no sender ID and cannot be revealed.
+Use `POST /api/v1/message/public` (login required) to create a public message.
+
+`GET /api/v1/message` requires login. It returns received messages; `sender` is
+`null` for anonymous messages and includes the sender's ID and name for public
+messages.
+
+The recipient can request a reveal with `POST /api/v1/request`:
+
+```json
+{
+  "message": "MESSAGE_ID"
+}
+```
+
+The server checks that the authenticated user owns the message and gets the
+sender ID from the saved message. The sender reviews incoming requests through
+`GET /api/v1/request` and can accept or reject through
+`PUT /api/v1/request/status`:
+
+```json
+{
+  "requestId": "REQUEST_ID",
+  "status": "accepted"
+}
+```
+
+Only the message sender can process that request. Accepting changes the
+message to `public`; rejecting keeps it anonymous. Do not send `sender` or
+`receiver` in the reveal request body.
+
+## Conversations
+
+An accepted reveal request automatically creates a conversation linked to the
+original message.
+
+### `GET /api/v1/conversation`
+
+Returns conversations where the logged-in user is either participant.
+
+### `POST /api/v1/conversation/:conversationId/messages`
+
+Sends a message in a conversation. Only a participant can send:
+
+```json
+{
+  "content": "Hello!"
+}
+```
+
+### `GET /api/v1/conversation/:conversationId/messages`
+
+Returns the conversation's messages. Only a participant can retrieve them.
 
 # Error Response
 

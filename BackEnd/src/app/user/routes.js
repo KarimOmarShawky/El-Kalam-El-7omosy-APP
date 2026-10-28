@@ -1,6 +1,7 @@
 import {Router} from "express";
 import {withCache} from "../../lib/cache/withCache.js";
 import {User} from "./model/user.model.js";
+import {uploadSingleFile} from "../../lib/media/multer.js";
 
 const router = Router();
 
